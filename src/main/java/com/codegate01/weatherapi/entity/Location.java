@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +43,22 @@ public class Location {
 
     @JsonProperty("localtime")
     @Column(name = "localTime")
-    private LocalTime localTime;
+    private String localTime;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name="location_current",
     joinColumns = @JoinColumn(name = "location_id"),
             inverseJoinColumns = @JoinColumn(name = "current_id"))
-    private List<Current> current = new ArrayList<>();
+    private List<Current> current;
+
+    public Location(String name, String region, String country, Double latitude, Double longitude, String tzone, String localTime, List<Current> current) {
+        this.name = name;
+        this.region = region;
+        this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.tzone = tzone;
+        this.localTime = localTime;
+        this.current = current;
+    }
 }

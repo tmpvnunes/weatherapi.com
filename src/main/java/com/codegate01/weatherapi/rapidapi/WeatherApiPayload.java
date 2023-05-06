@@ -1,17 +1,16 @@
 package com.codegate01.weatherapi.rapidapi;
 
 import com.codegate01.weatherapi.entity.Location;
-import jakarta.json.Json;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
+import com.codegate01.weatherapi.model.Current;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.*;
 import okhttp3.*;
 
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class WeatherApiPayload {
 
@@ -24,7 +23,6 @@ public class WeatherApiPayload {
                 .addHeader("X-RapidAPI-Host", host)
                 .build();
 
-        System.out.println(request.toString());
 
         Response call = client.newCall(request).execute();
         ResponseBody responseBody = call.body();
@@ -32,6 +30,7 @@ public class WeatherApiPayload {
         if (call.code() != 200) {
             return null;
         } else {
+            assert responseBody != null;
             String jsonString  = responseBody.string();
             //System.out.println(jsonString );
             JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
@@ -48,12 +47,19 @@ public class WeatherApiPayload {
             JsonNumber latitude = jsonLocationObject.getJsonNumber("lat");
             JsonNumber longitude = jsonLocationObject.getJsonNumber("lon");
             String localTimeString = jsonLocationObject.getString("localtime");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalTime localTime = LocalTime.parse(localTimeString,formatter);
+
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            //LocalTime localTime = LocalTime.parse(localTimeString,formatter);
 
 
-            return null;
-            //return new Location(0L,name,region,country, latitude.doubleValue(), longitude.doubleValue(),tzone,localTime);
+            JsonObject jsonArray = jsonObj.getJsonObject("current");
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            List<Current> currentList = objectMapper.readValue(jsonArray.toString(), new TypeReference<>() {
+            });
+
+
+            return new Location(name,region,country, latitude.doubleValue(), longitude.doubleValue(),tzone,localTimeString, currentList);
 
         }
 
