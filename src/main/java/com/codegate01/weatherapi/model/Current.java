@@ -4,43 +4,57 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "`CURRENT`") // Enclose reserved word in backticks
 public class Current {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long last_updated_epoch;
+
+    private long last_updated_epoch;
     private String last_updated;
-    private int temp_c;
+    private double temp_c;
     private double temp_f;
-    private boolean is_day;
+    private int is_day;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "condition_id")
+    private Condition condition;
+
     private double wind_mph;
-    private int wind_kph;
+    private double wind_kph;
     private int wind_degree;
     private String wind_dir;
-    private int pressure_mb;
+    private double pressure_mb;
     private double pressure_in;
-    private int precip_mm;
-    private int precip_in;
+    private double precip_mm;
+    private double precip_in;
+
     private int humidity;
     private int cloud;
+
     private double feelslike_c;
     private double feelslike_f;
-    private int vis_km;
-    private int vis_miles;
-    private int uv;
+    private double windchill_c;
+    private double windchill_f;
+    private double heatindex_c;
+    private double heatindex_f;
+    private double dewpoint_c;
+    private double dewpoint_f;
+    private double vis_km;
+    private double vis_miles;
+    private double uv;
     private double gust_mph;
     private double gust_kph;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "current_condition",
-    joinColumns = @JoinColumn(name = "current_id"),
-    inverseJoinColumns = @JoinColumn(name = "condition_id"))
-    private List<Condition> condition = new ArrayList<>();
+    @OneToMany(mappedBy = "current", cascade = CascadeType.ALL)
+    private List<WeatherResponse> weatherResponses;
 
 
 }

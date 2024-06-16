@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @Entity()
+@Table(name = "`CONDITION`") // Enclose reserved word in backticks
 public class Condition {
 
     @Id
@@ -18,8 +16,9 @@ public class Condition {
 
     private String text;
     private String icon;
-    private String code;
+    private int code;
 
-    @ManyToMany(mappedBy = "condition",fetch = FetchType.LAZY)
-    private List<Current> currentList = new ArrayList<>();
+    @OneToOne(mappedBy = "condition", cascade = CascadeType.ALL)
+    private Current current;
+
 }
